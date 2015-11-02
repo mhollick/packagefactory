@@ -1,0 +1,7 @@
+repo/**
+**/RPMS
+**/SRPMS
+*gz
+*bz2
+/carbon-c-relay/carbon-c-relay
+/statsite-es/statsite

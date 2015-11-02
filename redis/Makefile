@@ -1,0 +1,30 @@
+#!/usr/bin/make -f
+#
+# Some patching of the collectd directory name was neeed.
+#
+CWD=$(shell pwd -P)
+BASE=${CWD}
+NAME=redis
+SPEC=${NAME}.spec
+VERSION="3.0.4"
+DISTRO=eurostar-aws
+
+rpm: srpm
+	mock --root=$(BASE)/../$(DISTRO).cfg --no-clean --rebuild $(CWD)/SRPMS/*.src.rpm --resultdir=$(CWD)/../repo/
+	mv $(BASE)/../repo/build.log $(BASE)/../repo/$(NAME)-rpm-build.log
+	mv $(BASE)/../repo/root.log $(BASE)/../repo/$(NAME)-rpm-root.log
+	mv $(BASE)/../repo/state.log $(BASE)/../repo/$(NAME)-rpm-state.log
+
+srpm: prepare
+	mock --root=$(BASE)/../$(DISTRO).cfg --buildsrpm --spec=$(CWD)/$(SPEC) --sources=$(CWD)/ --resultdir=$(CWD)/SRPMS
+	rm -rf ${BASE}/carbon-c-relay
+
+clean:
+	@rm -rf RPMS SRPMS
+
+prepare: clean
+	@mkdir -v SRPMS RPMS
+	wget -c http://download.redis.io/releases/${NAME}-${VERSION}.tar.gz
+	#@git clone -b "${TAG}" https://github.com/grobian/carbon-c-relay.git
+	#@tar -cvjf ${NAME}-${VERSION}.tar.bz2 ${NAME}
+	#@rm -rf ${NAME}-${TAG}
